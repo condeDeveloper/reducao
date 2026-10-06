@@ -39,10 +39,13 @@ public static class Preguicosa
     /// A conta de passos conta reducoes beta de verdade, e nao visitas: e por
     /// isso que ela da para comparar com as outras estrategias.
     /// </summary>
-    public static Resultado Reduzir(Termo termo, int limite = 10_000)
+    public static Resultado Reduzir(Termo termo, int limite = 2_000)
     {
         ArgumentNullException.ThrowIfNull(termo);
 
+        // O limite daqui e menor que o das outras estrategias de proposito: esta
+        // avaliacao desce na pilha a cada aplicacao, entao o numero de passos
+        // que ela aguenta e limitado pela pilha e nao pela paciencia.
         var passos = 0;
         var compartilhados = 0;
         var ambiente = new Dictionary<string, Caixa>(StringComparer.Ordinal);
