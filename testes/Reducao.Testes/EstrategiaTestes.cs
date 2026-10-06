@@ -143,6 +143,42 @@ public class EstrategiaTestes
         Assert.True(ChurchRosser.EhFormaNormal(trilha[^1]));
     }
 
+    /// <summary>
+    /// O limite de PROFUNDIDADE existe separado do de passos, e isso me custou
+    /// uma integracao continua vermelha em dois dos tres sistemas.
+    ///
+    /// Contar passos limita o trabalho e nao limita a PILHA: todo percurso de
+    /// termo aqui e recursivo, e um termo que fica mais fundo a cada reducao
+    /// estoura a pilha com o contador de passos longe do limite. O Linux
+    /// aguentou e o macOS e o Windows nao.
+    /// </summary>
+    [Fact]
+    public void OLimiteDeProfundidadeExisteSeparadoDoDePassos()
+    {
+        // o Y aplicado a K, sob ordem aplicativa, cresce em profundidade
+        var termo = A(Combinadores.Y(), Combinadores.K());
+        var r = Reducao.Reduzir(termo, Estrategia.Aplicativa, 1_000_000, fundo: 100);
+
+        Assert.False(r.Terminou);
+        Assert.True(r.Passos < 10_000, $"gastou {r.Passos} passos antes de parar");
+        Assert.True(r.Final.Profundidade() <= 200);
+    }
+
+    /// <summary>
+    /// E ele nao atrapalha termo de verdade: nenhuma conta de numeral chega
+    /// perto de quatrocentos niveis.
+    /// </summary>
+    [Fact]
+    public void OLimiteDeProfundidadeNaoAtrapalhaContaDeVerdade()
+    {
+        foreach (var (nome, conta, _) in Igreja.Contas())
+            foreach (var estrategia in new[] { Estrategia.Normal, Estrategia.Aplicativa })
+            {
+                var r = Reducao.Reduzir(conta, estrategia, 100_000);
+                Assert.True(r.Terminou, $"{nome} sob {Reducao.Nome(estrategia)} bateu em algum limite");
+            }
+    }
+
     [Fact]
     public void CadaEstrategiaTemNome()
     {
