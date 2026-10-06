@@ -174,7 +174,24 @@ public static class Reducao
     /// deles cabe em oito caracteres. Sem limite, a medida nao seria uma medida:
     /// seria um processo travado.
     /// </summary>
-    public static Resultado Reduzir(Termo termo, Estrategia estrategia, int limite = 10_000)
+    /// <param name="fundo">
+    /// A PROFUNDIDADE maxima do termo, que e um limite diferente do de passos e
+    /// precisa existir junto com ele.
+    ///
+    /// Isso me custou uma integracao continua vermelha em DOIS dos tres
+    /// sistemas. Contar passos limita o trabalho e nao limita a PILHA: todo
+    /// percurso de termo aqui e recursivo, entao um termo que fica mais FUNDO a
+    /// cada reducao estoura a pilha mesmo com o contador de passos longe do
+    /// limite.
+    ///
+    /// E o limite de tamanho nao pega isso: o combinador Y aplicado a K cresce
+    /// em profundidade muito mais depressa do que em numero de nos, e derrubou
+    /// o processo com 3.211 quadros, com o tamanho ainda na casa dos milhares.
+    ///
+    /// O Linux aguentou e o macOS e o Windows nao, que e o pior jeito de um
+    /// erro aparecer: o teste passa na maquina de quem escreveu.
+    /// </param>
+    public static Resultado Reduzir(Termo termo, Estrategia estrategia, int limite = 10_000, int fundo = 400)
     {
         ArgumentNullException.ThrowIfNull(termo);
 
@@ -191,15 +208,17 @@ public static class Reducao
             atual = proximo;
 
             // Um termo que cresce sem parar e tao divergente quanto um que
-            // repete: parar nele evita estourar a memoria em vez do limite.
-            if (atual.Tamanho() > 200_000) return new Resultado(atual, passo + 1, false, renomeacoes);
+            // repete: parar nele evita estourar a memoria em vez do limite. E o
+            // que cresce para BAIXO estoura a pilha antes da memoria.
+            if (atual.Profundidade() > fundo || atual.Tamanho() > 200_000)
+                return new Resultado(atual, passo + 1, false, renomeacoes);
         }
 
         return new Resultado(atual, limite, false, renomeacoes);
     }
 
     /// <summary>A trilha inteira, para olhar a reducao acontecer.</summary>
-    public static List<Termo> Trilha(Termo termo, Estrategia estrategia, int limite = 50)
+    public static List<Termo> Trilha(Termo termo, Estrategia estrategia, int limite = 50, int fundo = 400)
     {
         var trilha = new List<Termo> { termo };
         var atual = termo;
@@ -211,6 +230,8 @@ public static class Reducao
 
             atual = proximo;
             trilha.Add(atual);
+
+            if (atual.Profundidade() > fundo) break;
         }
 
         return trilha;
