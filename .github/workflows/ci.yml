@@ -1,0 +1,53 @@
+name: testes
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  testes:
+    runs-on: ${{ matrix.so }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        so: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      # O juiz e o teorema de CHURCH-ROSSER, conferido em cinquenta mil termos
+      # SORTEADOS. Sete termos escolhidos a mao nao dizem nada sobre um teorema
+      # que fala de todos os termos.
+      #
+      # Foram eles que acharam os dois bugs da substituicao: o nome fresco
+      # precisa evitar tres conjuntos, e a igualdade a menos de renomear nao
+      # pode contar a profundidade pelo tamanho do mapa. Nenhum dos exemplos
+      # escritos a mao reusava nome do jeito certo para quebrar.
+      - name: testes
+        run: dotnet test testes/Reducao.Testes/Reducao.Testes.csproj -c Release --nologo -v q
+
+      - name: Church-Rosser em cinquenta mil termos sorteados
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- juiz
+
+      # A estrategia nao muda a resposta e muda SE ha resposta: a ordem normal
+      # responde em dois passos onde a aplicativa nao responde nunca.
+      - name: as estrategias
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- estrategias
+
+      - name: a captura de variavel
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- captura
+
+      - name: os numerais de Igreja
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- igreja
+
+      - name: a reducao preguicosa
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- preguicosa
+
+      - name: a recursao sem nome
+        run: dotnet run --project ferramentas/Medidor/Medidor.csproj -c Release -- recursao
