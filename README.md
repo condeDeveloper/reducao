@@ -153,14 +153,14 @@ A ordem aplicativa entra **dentro** de lambda, e a proteção do Z é exatamente
 lambda. O que o Z resolve é a estratégia **por valor**, que é a das linguagens de
 verdade: ali função é valor pronto e o corpo não é tocado.
 
-**Contar passos limita o trabalho e nao limita a pilha, e a integracao continua
-descobriu isso em dois dos tres sistemas.** Todo percurso de termo aqui e
+**Contar passos limita o trabalho e não limita a pilha, e a integração contínua
+descobriu isso em dois dos três sistemas.** Todo percurso de termo aqui é
 recursivo, e o combinador Y aplicado a K, sob ordem aplicativa, cresce em
-**profundidade** muito mais depressa do que em numero de nos: ele derrubou o
+**profundidade** muito mais depressa do que em número de nós: ele derrubou o
 processo com 3.211 quadros de pilha, com o contador de passos longe do limite e o
-tamanho ainda na casa dos milhares. O Linux aguentou e o macOS e o Windows nao,
-que e o pior jeito de um erro aparecer: o teste passa na maquina de quem
-escreveu. Sao tres limites diferentes, e os tres precisam existir.
+tamanho ainda na casa dos milhares. O Linux aguentou e o macOS e o Windows não,
+que é o pior jeito de um erro aparecer: o teste passa na máquina de quem
+escreveu. São três limites diferentes, e os três precisam existir.
 
 **E `m` elevado a zero não reduz para o numeral um.** Ele reduz para a
 identidade, porque "zero aplicado a `m`" é "aplicar `m` zero vezes", que é não
